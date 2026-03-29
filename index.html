@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Typing Test</title>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet"
+        href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        .bg1 {
+            background-color: #dac0ff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .heading {
+            font-family: "Roboto", sans-serif;
+            color: #690cb0;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .sub-heading {
+            color: #323f4b;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .typing-test-bg {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .typing-card {
+            background-color: #f3eaff;
+            padding: 30px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+        }
+
+        .clock-img {
+            width: 40px;
+        }
+
+        .timer-text {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .seconds-text {
+            margin-left: 5px;
+        }
+
+        .quote-text {
+            background-color: #f2ebfe;
+            border: 1px solid #9aa5b1;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        #result {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .button {
+            background-color: #690cb0;
+            padding: 8px 12px;
+            border-radius: 8px;
+            color: white;
+            border: none;
+        }
+
+        .button1 {
+            background-color: #ffffff;
+            padding: 8px 12px;
+            border-radius: 8px;
+            color: black;
+            border: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container bg1">
+        <h1 class="heading">Typing Test</h1>
+        <p class="sub-heading">On your fingers lets set Go!</p>
+
+        <div class="typing-test-bg">
+            <div class="typing-card">
+                <div class="d-flex align-items-center mb-3">
+                    <img src="https://assets.ccbp.in/frontend/dynamic-webapps/clock-img.png"
+                        class="clock-img" />
+                    <p id="timer" class="timer-text ml-2">0</p>
+                    <span class="seconds-text">seconds</span>
+                </div>
+
+                <div class="spinner-border text-primary d-none" id="spinner"></div>
+
+                <p id="quoteDisplay" class="quote-text"></p>
+
+                <textarea id="quoteInput" class="form-control mb-3" rows="5"
+                    placeholder="Type here!!"></textarea>
+
+                <p id="result"></p>
+
+                <div>
+                    <button id="submitBtn" class="button mr-2">Submit</button>
+                    <button id="resetBtn" class="button1">Reset</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const timerEl = document.getElementById("timer");
+        const quoteDisplay = document.getElementById("quoteDisplay");
+        const quoteInput = document.getElementById("quoteInput");
+        const resultEl = document.getElementById("result");
+        const submitBtn = document.getElementById("submitBtn");
+        const resetBtn = document.getElementById("resetBtn");
+        const spinner = document.getElementById("spinner");
+
+        let time = 0;
+        let timerId = null;
+
+        function startTimer() {
+            timerId = setInterval(function () {
+                time += 1;
+                timerEl.textContent = time;
+            }, 1000);
+        }
+
+        function getQuote() {
+            spinner.classList.remove("d-none");
+            quoteDisplay.textContent = "";
+
+            fetch("https://apis.ccbp.in/random-quote")
+                .then(function (response) {
+                    return response.json();
+                })
+                .then(function (data) {
+                    spinner.classList.add("d-none");
+                    quoteDisplay.textContent = data.content;
+
+                    time = 0;
+                    timerEl.textContent = 0;
+
+                    startTimer();
+                });
+        }
+
+        submitBtn.addEventListener("click", function () {
+            if (quoteInput.value === quoteDisplay.textContent) {
+                clearInterval(timerId);
+                resultEl.textContent = "You typed in " + time + " seconds";
+                resultEl.style.color = "green";
+            } else {
+                resultEl.textContent = "You typed incorrect sentence";
+                resultEl.style.color = "red";
+            }
+        });
+
+        resetBtn.addEventListener("click", function () {
+            clearInterval(timerId);
+            quoteInput.value = "";
+            resultEl.textContent = "";
+            time = 0;
+            timerEl.textContent = 0;
+            getQuote();
+        });
+
+        getQuote();
+    </script>
+</body>
+
+</html>
